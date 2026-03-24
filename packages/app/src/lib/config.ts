@@ -4,6 +4,9 @@ const CONFIG = {
   plcDirectory: (import.meta.env.VITE_PLC_DIRECTORY ||
     import.meta.env.PUBLIC_PLC_DIRECTORY ||
     "https://plc.directory") as string,
+  handleResolver: (import.meta.env.VITE_HANDLE_RESOLVER ||
+    import.meta.env.PUBLIC_PDS ||
+    "https://resolver.roomy.chat") as string,
   faroEndpoint: (import.meta.env.VITE_FARO_ENDPOINT || undefined) as
     | string
     | undefined,

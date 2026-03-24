@@ -44,7 +44,8 @@ async function decodeKey(encoded: unknown): Promise<Key> {
 
 export const workerOauthClient = (clientMetadata: OAuthClientMetadataInput) =>
   new OAuthClient({
-    handleResolver: "https://resolver.roomy.chat",
+    handleResolver: CONFIG.handleResolver,
+    plcDirectoryUrl: CONFIG.plcDirectory,
     responseMode: "query",
     clientMetadata,
 
@@ -190,8 +191,10 @@ export async function createOauthClient(): Promise<OAuthClient> {
   if (typeof window !== "undefined") {
     return new BrowserOAuthClient({
       clientMetadata,
-      handleResolver: "https://resolver.roomy.chat",
+      handleResolver: CONFIG.handleResolver,
+      plcDirectoryUrl: CONFIG.plcDirectory,
       responseMode: "query",
+      allowHttp: true,
     });
   } else {
     // If we are not on the main thread, return our custom client that works inside of a web worker.
