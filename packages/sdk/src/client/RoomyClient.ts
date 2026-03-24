@@ -16,6 +16,7 @@ import type { Agent } from "@atproto/api";
 import type { LeafClient } from "@muni-town/leaf-client";
 import { Did, Handle, UserDid, StreamDid, type, newUlid } from "../schema";
 import { Deferred } from "../utils/Deferred";
+import { isLocalDev } from "../utils/isLocalDev";
 import { createLeafClient, type LeafConfig } from "../leaf";
 import {
   getProfile,
@@ -121,11 +122,21 @@ export class RoomyClient {
       authenticated.resolve();
     });
 
-    // Wait for authentication before returning
-    await withTimeoutWarning(
-      authenticated.promise,
-      "RoomyClient.create: waiting for Leaf authentication",
-    );
+    leaf.on("error", (error) => {
+      console.error("Leaf: error", error);
+    });
+
+    // Check if we're in local dev
+    if (isLocalDev(config.agent)) {
+      // In local dev, skip Leaf authentication (it fails due to PLC directory mismatch)
+      console.debug("[RoomyClient] Local dev detected: skipping Leaf authentication");
+    } else {
+      // Wait for authentication before returning
+      await withTimeoutWarning(
+        authenticated.promise,
+        "RoomyClient.create: waiting for Leaf authentication",
+      );
+    }
 
     return new RoomyClient(config, leaf);
   }

@@ -6,6 +6,7 @@ export {
   mapAsyncStateWithIdle,
 } from "./AsyncState";
 export { Deferred } from "./Deferred";
+export { isLocalDev } from "./isLocalDev";
 export { sql } from "./sqlTemplate";
 export { withTimeoutWarning, withTimeoutCallback } from "./timeout";
 export {

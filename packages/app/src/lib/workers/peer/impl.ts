@@ -29,6 +29,7 @@ import {
   ConnectedSpace,
   Did,
   ensureEntity,
+  isLocalDev,
   modules,
   parseEvents,
   RoomyClient,
@@ -58,6 +59,7 @@ import { context, SpanStatusCode } from "@opentelemetry/api";
 import { logMaterializationResult } from "../materializationLogging";
 import { createOauthClient, oauthDb } from "./oauth";
 import { Agent, CredentialSession } from "@atproto/api";
+import { LocalDevAgent } from "./LocalDevAgent";
 import { lexicons } from "$lib/lexicons";
 import type { SessionManager } from "@atproto/api/dist/session-manager";
 
@@ -529,7 +531,11 @@ export class Peer {
     );
 
     // Create a new ATProto agent around the authenticated session
-    const agent = new Agent(session);
+    // Use LocalDevAgent in local dev to bypass AppView
+    const agent = isLocalDev(session)
+      ? new LocalDevAgent(session)
+      : new Agent(session);
+
     lexicons.forEach((l) => agent.lex.add(l as any));
 
     this.#roomy.current = { state: "connectingToServer" };
