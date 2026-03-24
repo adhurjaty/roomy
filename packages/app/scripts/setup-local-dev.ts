@@ -42,6 +42,7 @@ interface AccountCredentials {
   handle: string;
   password: string;
   did: string;
+  displayName: string;
 }
 
 interface CredentialsFile {
@@ -132,6 +133,24 @@ async function main() {
 
       console.log("  ✓ Authenticated");
 
+      // Create/update profile on PDS
+      console.log("  Setting up profile...");
+      try {
+        await agent.com.atproto.repo.putRecord({
+          repo: accountDid,
+          collection: "app.bsky.actor.profile",
+          rkey: "self",
+          record: {
+            $type: "app.bsky.actor.profile",
+            displayName: persona.name,
+            description: `${persona.name}'s local dev account`,
+          },
+        });
+        console.log("  ✓ Profile created");
+      } catch (profileError: any) {
+        console.warn("  ⚠ Failed to create profile:", profileError?.message);
+      }
+
       // Create RoomyClient with timeout
       console.log("  Connecting to Leaf...");
       const client = await withTimeout(
@@ -166,6 +185,7 @@ async function main() {
         handle: persona.handle,
         password,
         did: accountDid,
+        displayName: persona.name,
       });
 
       console.log(`✅ ${persona.name} setup complete!`);
@@ -184,7 +204,7 @@ async function main() {
   console.log("\n=== Setup Complete! ===\n");
   console.log("Available accounts:");
   for (const account of credentials.accounts) {
-    console.log(`  • ${account.handle} / password-${account.handle.split('.')[0]}`);
+    console.log(`  • ${account.displayName} (${account.handle}) / password-${account.handle.split('.')[0]}`);
   }
   console.log("\nTo start developing:");
   console.log("  1. cd packages/app");
