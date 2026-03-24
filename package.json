@@ -14,7 +14,11 @@
     "prepare": "node ./.husky/install.mjs",
     "dev": "turbo run dev --filter=roomy.chat",
     "dev:bridge": "turbo run dev --filter=discord-bridge",
-    "dev:all": "turbo dev"
+    "dev:all": "turbo dev",
+    "dev:local": "docker compose up -d && pnpm setup:local-dev && cd packages/app && pnpm dev",
+    "setup:local-dev": "cd packages/app && tsx scripts/setup-local-dev.ts",
+    "setup:local-dev:reset": "docker compose down -v && docker compose up -d && pnpm setup:local-dev",
+    "pds:logs": "docker compose logs pds -f"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
@@ -25,6 +29,7 @@
     "pkgroll": "^2.13.1",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",
+    "tsx": "^4.20.3",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3"
   },

@@ -16,9 +16,12 @@ services:
       https_proxy:
       DID: did:web:localhost
       PLC_DIRECTORY: http://plc-directory:3000
-      ENDPOINT: http://locahost:5530
+      ENDPOINT: http://localhost:5530
+      RUST_LOG: info
     networks:
       - roomy-dev
+    depends_on:
+      - plc-directory
 
   plc-directory:
     image: ghcr.io/zicklag/did-plc-server:plc-053ddecb6a12ce0e996d300f9395899adf02dd05
@@ -37,6 +40,32 @@ services:
       LOG_DESTINATION: 1
     networks:
       - roomy-dev
+
+  pds:
+    build:
+      context: ./pds
+    ports:
+      - "2583:2583"
+    environment:
+      PDS_HOSTNAME: localhost
+      PDS_PORT: 2583
+      PDS_DEV_MODE: "true"
+      PDS_DATA_DIRECTORY: /pds-data
+      PDS_BLOBSTORE_DISK_LOCATION: /pds-data/blobs
+      PDS_DID_PLC_URL: http://plc-directory:3000
+      PDS_BSKY_APP_VIEW_URL: http://leaf-server:5530
+      PDS_BSKY_APP_VIEW_DID: did:web:localhost
+      PDS_JWT_SECRET: local-dev-jwt-secret
+      PDS_ADMIN_PASSWORD: local-dev-admin-password
+      PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX: fc37508eb22896f721206cdaa81dd23bc243e6499412f8d590e389d5272e206c
+      PDS_INVITE_REQUIRED: "false"
+    volumes:
+      - pds-data:/pds-data
+    networks:
+      - roomy-dev
+    depends_on:
+      - plc-directory
+      - leaf-server
 
   plc-db:
     image: postgres

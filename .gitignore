@@ -46,3 +46,6 @@ mise.toml
 
 # Worktrees
 .worktrees/
+
+# Local dev credentials
+.dev-credentials.json

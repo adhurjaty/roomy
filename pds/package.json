@@ -7,7 +7,7 @@
     "start": "node index.mjs"
   },
   "dependencies": {
-    "@atproto/pds": "^0.5.2",
+    "@atproto/pds": "^0.4.214",
     "dotenv": "^16.4.5"
   }
 }
